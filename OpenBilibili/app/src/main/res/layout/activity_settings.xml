@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RadioGroup
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="cc.duduhuo.openbilibili.SettingsActivity">
+
+    <RadioButton
+        android:id="@+id/rbBili"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="我使用哔哩哔哩"/>
+
+    <RadioButton
+        android:id="@+id/rbBiliBlue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="我使用哔哩哔哩概念"/>
+
+    <RadioButton
+        android:id="@+id/rbWebView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="我使用浏览器"/>
+</RadioGroup>
