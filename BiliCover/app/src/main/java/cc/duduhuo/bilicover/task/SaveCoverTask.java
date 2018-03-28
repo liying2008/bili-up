@@ -14,7 +14,7 @@ import java.util.concurrent.ExecutionException;
 
 import cc.duduhuo.bilicover.util.FileUtils;
 
-import static cc.duduhuo.applicationtoast.AppToast.showToast;
+import cc.duduhuo.applicationtoast.AppToast;
 
 /**
  * =======================================================
@@ -62,9 +62,9 @@ public class SaveCoverTask extends AsyncTask<String, Void, Boolean> {
     protected void onPostExecute(Boolean success) {
         super.onPostExecute(success);
         if (success) {
-            showToast("封面已保存至 " + Environment.DIRECTORY_DOWNLOADS + " 目录下");
+            AppToast.showToast("封面已保存至 " + Environment.DIRECTORY_DOWNLOADS + " 目录下");
         } else {
-            showToast("封面保存失败");
+            AppToast.showToast("封面保存失败");
         }
     }
 }

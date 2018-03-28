@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,7 +87,7 @@ public class BiliVideoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             ItemViewHolder itemHolder = (ItemViewHolder) holder;
             final BiliVideo video = mVideos.get(position);
             Glide.with(mActivity).load(video.getCoverUrl()).asBitmap().centerCrop().into(itemHolder.mIvCover);
-            itemHolder.mTvTitle.setText(video.getTitle());
+            itemHolder.mTvTitle.setText(Html.fromHtml(video.getTitle()));
             itemHolder.mTvUp.setText(video.getUp());
             itemHolder.mTvPlay.setText(video.getPlay());
             itemHolder.mTvTime.setText(video.getTime());
@@ -95,7 +96,7 @@ public class BiliVideoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 public void onClick(View v) {
                     // 跳转到内置浏览器播放视频
                     Intent intent = new Intent(mActivity, WebActivity.class);
-                    String url =  "http://m.bilibili.com/video/av" + video.getAv() + ".html";
+                    String url = "https://m.bilibili.com/video/av" + video.getAv() + ".html";
                     intent.putExtra("web", url);
                     mActivity.startActivity(intent);
                 }

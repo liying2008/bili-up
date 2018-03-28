@@ -20,7 +20,7 @@ import cc.duduhuo.bilicover.listener.OnGetVideoListener;
 import cc.duduhuo.bilicover.task.BiliVideoTask;
 import cc.duduhuo.bilicover.view.DSwipeRefresh;
 
-import static cc.duduhuo.applicationtoast.AppToast.showToast;
+import cc.duduhuo.applicationtoast.AppToast;
 
 public class MainActivity extends AppCompatActivity implements OnGetVideoListener {
     private EditText mEtKeyword;
@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements OnGetVideoListene
         mSwipeRefresh.setOnLoadingListener(new DSwipeRefresh.OnLoadingListener() {
             @Override
             public void onLoading() {
+                mAdapter.setFooterInfo("正在加载...");
                 mPage++;
                 BiliVideoTask task = new BiliVideoTask(MainActivity.this);
                 task.execute(mKeyword, String.valueOf(mPage));
@@ -94,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements OnGetVideoListene
     private void startSearch() {
         mKeyword = mEtKeyword.getText().toString().trim();
         if ("".equals(mKeyword)) {
-            showToast("搜索关键词不能为空。");
+            AppToast.showToast("搜索关键词不能为空。");
             return;
         }
         BiliVideoTask task = new BiliVideoTask(MainActivity.this);
@@ -118,13 +119,13 @@ public class MainActivity extends AppCompatActivity implements OnGetVideoListene
     @Override
     public void onFailure() {
         mSwipeRefresh.setRefreshing(false);
-        showToast("获取数据失败");
+        AppToast.showToast("获取数据失败");
     }
 
     @Override
     public void noMore() {
         mSwipeRefresh.setRefreshing(false);
-        showToast("没有更多数据了");
+        AppToast.showToast("没有更多数据了");
         mAdapter.setFooterInfo("没有更多数据了");
     }
 }

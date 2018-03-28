@@ -3,17 +3,18 @@ package cc.duduhuo.bilicover.task;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
 import cc.duduhuo.bilicover.bean.BiliVideo;
 import cc.duduhuo.bilicover.listener.OnGetVideoListener;
+import cc.duduhuo.bilicover.util.HttpUtil;
 
 /**
  * =======================================================
@@ -41,66 +42,35 @@ public class BiliVideoTask extends AsyncTask<String, Void, Integer> {
      */
     @Override
     protected Integer doInBackground(String... params) {
+        String url = "https://search.bilibili.com/api/search?search_type=video&keyword=" +
+            URLEncoder.encode(params[0]) + "&page=" + params[1] + "&order=totalrank";
+        Log.i("url ", url);
         biliVideos.clear();
         try {
-            Document doc = Jsoup.connect("http://search.bilibili.com/all?keyword=" + params[0]
-                + "&page=" + params[1] + "&order=totalrank").get();
-            Elements elements = doc.select(".video").select(".list").select(".av");
-            if (!elements.isEmpty()) {
-                Element select = elements.get(0);
-                Element mainHrefEle = select.getElementsByTag("a").get(0);
-                // 得到视频链接
-                String href = mainHrefEle.attr("href");
-                href = "http:" + href.substring(0, href.lastIndexOf('?'));
-                // 得到视频标题
-                String title = mainHrefEle.attr("title");
-                // 得到视频AV号
-                String av = getAVNum(href);
-                // 得到图片地址
-                String coverUrl = select.getElementsByTag("img").get(0).attr("data-src");
-                coverUrl = "http:" + coverUrl;
-                // 得到播放时间
-                String time = select.getElementsByTag("span").get(0).text();
-
-                Elements mainInfo = select.getElementsByClass("so-icon");
-                // 得到播放数
-                String play = mainInfo.get(0).text();
-
-                // 得到UP主姓名
-                String up = mainInfo.get(3).getElementsByTag("a").text();
-
-                BiliVideo biliVideo = new BiliVideo(coverUrl, av, title, up, play, time);
-                Log.d("bili", biliVideo.toString());
-                biliVideos.add(biliVideo);
-            }
-            elements = doc.select(".video").select(".matrix");
-            for (Element ele : elements) {
-                Element hrefEle = ele.getElementsByTag("a").get(0);
-                // 得到视频链接
-                String href = hrefEle.attr("href");
-                href = "http:" + href.substring(0, href.lastIndexOf('?'));
-                // 得到视频标题
-                String title = hrefEle.attr("title");
-                // 得到视频AV号
-                String av = getAVNum(href);
-                Element img = ele.getElementsByTag("img").get(0);
-                // 得到图片地址
-                String coverUrl = img.attr("data-src");
-                coverUrl = "http:" + coverUrl;
-                // 得到播放时间
-                String time = ele.getElementsByTag("span").get(0).text();
-
-                Elements info = ele.getElementsByClass("so-icon");
-                // 得到播放数
-                String watchInfo = info.get(0).text();
-
-                Element upInfo = info.get(3);
-                // 得到UP主姓名
-                String up = upInfo.getElementsByTag("a").text();
-                BiliVideo biliVideo = new BiliVideo(coverUrl, av, title, up, watchInfo, time);
-                Log.d("bili", biliVideo.toString());
-                // 保存
-                biliVideos.add(biliVideo);
+            String jsonStr = HttpUtil.getData(url);
+            JSONArray results = ((JSONObject) JSON.parse(jsonStr)).getJSONArray("result");
+            if (results != null) {
+                int size = results.size();
+                if (size > 0) {
+                    for (Object obj : results) {
+                        JSONObject jsonObj = (JSONObject) obj;
+                        // 得到图片地址
+                        String coverUrl = "http:" + jsonObj.getString("pic");
+                        // 得到播放时间
+                        String time = jsonObj.getString("duration");
+                        // 得到视频AV号
+                        String av = String.valueOf(jsonObj.getLong("id"));
+                        // 得到视频标题
+                        String title = jsonObj.getString("title");
+                        // 得到UP主姓名
+                        String up = jsonObj.getString("author");
+                        // 得到播放数
+                        String play = String.valueOf(jsonObj.getLong("play"));
+                        BiliVideo biliVideo = new BiliVideo(coverUrl, av, title, up, play, time);
+                        Log.d("bili", biliVideo.toString());
+                        biliVideos.add(biliVideo);
+                    }
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -127,15 +97,5 @@ public class BiliVideoTask extends AsyncTask<String, Void, Integer> {
                 }
             }
         }
-    }
-
-    /**
-     * 得到AV号
-     *
-     * @param href
-     * @return
-     */
-    private String getAVNum(String href) {
-        return href.replace("http://www.bilibili.com/video/av", "").replace("/", "");
     }
 }
