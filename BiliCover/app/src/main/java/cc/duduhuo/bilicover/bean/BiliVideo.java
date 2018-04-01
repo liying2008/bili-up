@@ -20,14 +20,14 @@ public class BiliVideo {
     /** up主名字 */
     private String up;
     /** 播放次数 */
-    private String play;
+    private int play;
     /** 视频时长 */
     private String time;
 
     public BiliVideo() {
     }
 
-    public BiliVideo(String coverUrl, String av, String title, String up, String play, String time) {
+    public BiliVideo(String coverUrl, String av, String title, String up, int play, String time) {
         this.coverUrl = coverUrl;
         this.av = av;
         this.title = title;
@@ -68,11 +68,11 @@ public class BiliVideo {
         this.up = up;
     }
 
-    public String getPlay() {
+    public int getPlay() {
         return play;
     }
 
-    public void setPlay(String play) {
+    public void setPlay(int play) {
         this.play = play;
     }
 
@@ -91,7 +91,7 @@ public class BiliVideo {
             ", av='" + av + '\'' +
             ", title='" + title + '\'' +
             ", up='" + up + '\'' +
-            ", play='" + play + '\'' +
+            ", play=" + play +
             ", time='" + time + '\'' +
             '}';
     }

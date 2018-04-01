@@ -3,6 +3,7 @@ package cc.duduhuo.bilicover.adapter;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -21,7 +22,7 @@ import java.util.List;
 import cc.duduhuo.bilicover.R;
 import cc.duduhuo.bilicover.activity.WebActivity;
 import cc.duduhuo.bilicover.bean.BiliVideo;
-import cc.duduhuo.bilicover.task.SaveCoverTask;
+import cc.duduhuo.bilicover.util.NumberFormatter;
 
 /**
  * =======================================================
@@ -38,9 +39,23 @@ public class BiliVideoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private Activity mActivity;
     private List<BiliVideo> mVideos = new ArrayList<>(1);
     private String mFooterInfo = "";
+    private OnClickPicListener mListener;
+
+    public interface OnClickPicListener {
+        /**
+         * 点击封面图片监听
+         *
+         * @param url 封面图片url
+         */
+        void onClickPicListener(String url);
+    }
 
     public BiliVideoAdapter(Activity activity) {
         this.mActivity = activity;
+    }
+
+    public void setOnClickPicListener(OnClickPicListener listener) {
+        this.mListener = listener;
     }
 
     public void setData(List<BiliVideo> videos) {
@@ -70,26 +85,25 @@ public class BiliVideoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == TYPE_ITEM) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_bili, parent, false);
             return new ItemViewHolder(view);
-        } else if (viewType == TYPE_FOOTER) {
+        } else {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_footer, parent, false);
             return new FooterViewHolder(view);
         }
-        return null;
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
         if (getItemViewType(position) == TYPE_ITEM) {
             ItemViewHolder itemHolder = (ItemViewHolder) holder;
             final BiliVideo video = mVideos.get(position);
             Glide.with(mActivity).load(video.getCoverUrl()).asBitmap().centerCrop().into(itemHolder.mIvCover);
             itemHolder.mTvTitle.setText(Html.fromHtml(video.getTitle()));
             itemHolder.mTvUp.setText(video.getUp());
-            itemHolder.mTvPlay.setText(video.getPlay());
+            itemHolder.mTvPlay.setText(NumberFormatter.formatNumber(video.getPlay()));
             itemHolder.mTvTime.setText(video.getTime());
             itemHolder.mLlVideo.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -117,8 +131,9 @@ public class BiliVideoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             // 下载视频封面
-                            SaveCoverTask task = new SaveCoverTask(mActivity);
-                            task.execute(video.getCoverUrl());
+                            if (mListener != null) {
+                                mListener.onClickPicListener(video.getCoverUrl());
+                            }
                         }
                     });
                     builder.create().show();

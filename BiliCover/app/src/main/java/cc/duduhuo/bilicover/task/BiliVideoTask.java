@@ -62,10 +62,12 @@ public class BiliVideoTask extends AsyncTask<String, Void, Integer> {
                         String av = String.valueOf(jsonObj.getLong("id"));
                         // 得到视频标题
                         String title = jsonObj.getString("title");
+                        title = title.replace("<em class=\"keyword\">", "<font color=\"#f25d8e\">")
+                            .replace("</em>", "</font>");
                         // 得到UP主姓名
                         String up = jsonObj.getString("author");
                         // 得到播放数
-                        String play = String.valueOf(jsonObj.getLong("play"));
+                        int play = jsonObj.getIntValue("play");
                         BiliVideo biliVideo = new BiliVideo(coverUrl, av, title, up, play, time);
                         Log.d("bili", biliVideo.toString());
                         biliVideos.add(biliVideo);

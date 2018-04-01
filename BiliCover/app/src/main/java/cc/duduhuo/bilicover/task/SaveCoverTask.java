@@ -1,6 +1,6 @@
 package cc.duduhuo.bilicover.task;
 
-import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
@@ -10,11 +10,11 @@ import com.bumptech.glide.request.FutureTarget;
 import com.bumptech.glide.request.target.Target;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.concurrent.ExecutionException;
 
-import cc.duduhuo.bilicover.util.FileUtils;
-
 import cc.duduhuo.applicationtoast.AppToast;
+import cc.duduhuo.bilicover.util.FileUtils;
 
 /**
  * =======================================================
@@ -26,10 +26,10 @@ import cc.duduhuo.applicationtoast.AppToast;
  * =======================================================
  */
 public class SaveCoverTask extends AsyncTask<String, Void, Boolean> {
-    private Activity mActivity;
+    private WeakReference<Context> mContextRef;
 
-    public SaveCoverTask(Activity activity) {
-        this.mActivity = activity;
+    public SaveCoverTask(Context context) {
+        this.mContextRef = new WeakReference<>(context);
     }
 
     /**
@@ -38,16 +38,20 @@ public class SaveCoverTask extends AsyncTask<String, Void, Boolean> {
      */
     @Override
     protected Boolean doInBackground(String... params) {
-        FutureTarget<File> target = Glide.with(mActivity).load(params[0]).downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
+        FutureTarget<File> target = Glide.with(mContextRef.get()).load(params[0]).downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
         String coverPath = Environment.getExternalStorageDirectory() +
             File.separator + Environment.DIRECTORY_DOWNLOADS +
             File.separator + "BILI_" + System.currentTimeMillis() + ".jpg";
         Log.d("bili", coverPath);
         try {
             File file = target.get();
-            // 拷贝下载的头像文件到SD卡下的应用工作目录
-            FileUtils.copyFile(file.getAbsolutePath(), coverPath);
-            file.delete();
+            if (file.exists()) {
+                // 拷贝下载的头像文件到SD卡下的应用工作目录
+                FileUtils.copyFile(file.getAbsolutePath(), coverPath);
+                file.delete();
+            } else {
+                return false;
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
             return false;
