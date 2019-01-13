@@ -14,14 +14,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import cc.duduhuo.bilicover.R;
 import cc.duduhuo.bilicover.activity.WebActivity;
 import cc.duduhuo.bilicover.bean.BiliVideo;
+import cc.duduhuo.bilicover.config.GlideApp;
 import cc.duduhuo.bilicover.util.NumberFormatter;
 
 /**
@@ -84,6 +83,7 @@ public class BiliVideoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         notifyItemChanged(getItemCount() - 1);
     }
 
+    @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == TYPE_ITEM) {
@@ -100,7 +100,7 @@ public class BiliVideoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (getItemViewType(position) == TYPE_ITEM) {
             ItemViewHolder itemHolder = (ItemViewHolder) holder;
             final BiliVideo video = mVideos.get(position);
-            Glide.with(mActivity).load(video.getCoverUrl()).asBitmap().centerCrop().into(itemHolder.mIvCover);
+            GlideApp.with(mActivity).load(video.getCoverUrl()).centerCrop().into(itemHolder.mIvCover);
             itemHolder.mTvTitle.setText(Html.fromHtml(video.getTitle()));
             itemHolder.mTvUp.setText(video.getUp());
             itemHolder.mTvPlay.setText(NumberFormatter.formatNumber(video.getPlay()));

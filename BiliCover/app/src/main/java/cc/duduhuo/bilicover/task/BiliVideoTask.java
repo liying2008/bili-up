@@ -42,17 +42,21 @@ public class BiliVideoTask extends AsyncTask<String, Void, Integer> {
      */
     @Override
     protected Integer doInBackground(String... params) {
-        String url = "https://search.bilibili.com/api/search?search_type=video&keyword=" +
-            URLEncoder.encode(params[0]) + "&page=" + params[1] + "&order=totalrank";
+        // https://api.bilibili.com/x/web-interface/search/all?jsonp=jsonp&highlight=1&keyword=aaa&page=2
+        String url = "https://api.bilibili.com/x/web-interface/search/all?jsonp=jsonp&highlight=1&keyword=" +
+            URLEncoder.encode(params[0]) + "&page=" + params[1];
         Log.i("url ", url);
         biliVideos.clear();
         try {
             String jsonStr = HttpUtil.getData(url);
-            JSONArray results = ((JSONObject) JSON.parse(jsonStr)).getJSONArray("result");
-            if (results != null) {
-                int size = results.size();
+            JSONObject root = (JSONObject) JSON.parse(jsonStr);
+            JSONObject data = (JSONObject) root.get("data");
+            JSONObject result = (JSONObject) data.get("result");
+            JSONArray videos = result.getJSONArray("video");
+            if (videos != null) {
+                int size = videos.size();
                 if (size > 0) {
-                    for (Object obj : results) {
+                    for (Object obj : videos) {
                         JSONObject jsonObj = (JSONObject) obj;
                         // 得到图片地址
                         String coverUrl = "http:" + jsonObj.getString("pic");

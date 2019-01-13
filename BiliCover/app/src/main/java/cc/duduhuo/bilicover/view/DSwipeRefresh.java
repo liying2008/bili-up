@@ -1,6 +1,7 @@
 package cc.duduhuo.bilicover.view;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -34,7 +35,7 @@ public class DSwipeRefresh extends SwipeRefreshLayout {
 
     private RecyclerView.OnScrollListener mScrollListener = new RecyclerView.OnScrollListener() {
         @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
             if (newState == SCROLL_STATE_IDLE && sLastVisibleItem + 1 == mAdapter.getItemCount()) {
                 if (mOnLoadingListener != null) {
@@ -44,7 +45,7 @@ public class DSwipeRefresh extends SwipeRefreshLayout {
         }
 
         @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
             if (mGrid) {
                 sLastVisibleItem = mGridLayoutManager.findLastVisibleItemPosition();
